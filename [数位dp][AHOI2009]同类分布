@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+#define newline printf ("\n")
+#define space printf (" ")
+#define cinfalse ios::sync_with_stdio(false)
+#define fread(a) freopen (a".in", "r", stdin), freopen(a".out", "w", stdout)
+using namespace std;
+
+long long f[25][205][205], bits[205], a, b, Mod;
+
+long long dfs (int p, int sum, int mod, int lmit)
+{
+	if (p == 0)
+		return mod==0 && sum==Mod;
+	int updata = lmit ? bits[p]:9;
+	if (!lmit && f[p][sum][mod] >= 0)
+		return f[p][sum][mod];
+	long long res = 0;
+	for (int i = 0; i <= updata; i ++)
+		res += dfs (p-1, sum+i, (mod*10+i)%Mod, lmit && updata==i);
+	if (!lmit)
+		f[p][sum][mod] = res;
+	return res;
+}
+
+long long work (long long n)
+{
+	int len = 0, mod = 0;
+	while (n)
+		mod += n%10, bits[++len] = n%10, n /= 10;
+	long long res = 0;
+	for (Mod = 1; Mod <= len*9; Mod ++)
+	{
+		memset (f, -127, sizeof (f));
+		res += dfs (len, 0, 0, 1);
+	}
+	return res;
+}
+
+int main()
+{
+	scanf ("%lld%lld", &a, &b);
+	printf ("%lld", work(b) - work(a-1));
+    return 0;
+}
